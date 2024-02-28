@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=<table id="example" class="table table-striped" style="width:100%">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.css">
+    <link rel="stylesheet" href="../public/style.css" type="text/css">
+</head>
+<body>
+    <script async src="https://cse.google.com/cse.jsjs?cx=b2809a9ebea4a4ffc">
+    </script>
+    <div class="gcse-search"></div>
+    <div class="mid-table">
+        <table id="example" class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th>Yayın Adı</th>
+                    <th>Yazarların İsimleri</th>
+                    <th>Yayın Türü</th>
+                    <th>Yayımlanma Tarihi</th>
+                    <th>Yayıncı Adı</th>
+                    <th>Anahtar Kelimeler(Arama Motoru)</th>
+                    <th>Anahtar Kelimeler(Makale)</th>
+                    <th>Özet</th>
+                    <th>Referanslar</th>
+                    <th>Alıntı Sayısı</th>
+                    <th>Doi Numarası</th>
+                    <th>URL Adresi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i < publications.length; i++){ %>
+                <tr data-href="https://www.youtube.com/watch?v=6BdKUO2QbA0">
+                    <td><%= publications[i].name%></td>
+                    <td><%= publications[i].authors%></td>
+                    <td><%= publications[i].publicationType%></td>
+                    <% if(publications[i].publicationDate.getMonth() < 10){ %>
+                        <td><%= publications[i].publicationDate.getDate() + ".0" + publications[i].publicationDate.getMonth() + "." + publications[i].publicationDate.getFullYear()%></td>
+                    <%}else{ %>
+                        <td><%= publications[i].publicationDate.getDate() + "." + publications[i].publicationDate.getMonth() + "." + publications[i].publicationDate.getFullYear()%></td>
+                    <%}%>
+                    <td><%= publications[i].publisherName%></td>
+                    <td><%= publications[i].engineKeywords%></td>
+                    <td><%= publications[i].publicationKeywords%></td>
+                    <td><%= publications[i].summary%></td>
+                    <td><%= publications[i].references%></td>
+                    <td><%= publications[i].quotationCount%></td>
+                    <td><%= publications[i].doiNumber%></td>
+                    <td><a href="<%= publications[i].urlAdress%>" target="_blank"><%= publications[i].urlAdress%></a></td>
+                   </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <form class="input-area" method="POST" action="/search">
+        <div id="form-id" class="form-group row">
+            <label for="inputText" class="col-sm-2 col-form-label">Makale Arayın</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputText" name="keyword">
+            </div>
+    </form>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.bootstrap5.js"></script>
+</body>
+</html>

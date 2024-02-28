@@ -1,0 +1,26 @@
+{
+  "name": "webscrapingproject",
+  "version": "1.0.0",
+  "description": "scrabing portal",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [
+    "web-scrabing",
+    "node.js"
+  ],
+  "author": "Ahmet Berke Tekin",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "method-override": "^3.0.0",
+    "moment": "^2.30.1",
+    "mongoose": "^8.2.0",
+    "puppeteer": "^22.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
