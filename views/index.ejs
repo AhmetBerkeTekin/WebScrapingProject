@@ -11,8 +11,20 @@
 <body>
     <script async src="https://cse.google.com/cse.jsjs?cx=b2809a9ebea4a4ffc">
     </script>
-    <div class="gcse-search"></div>
-    <div class="mid-table">
+    <!-- Searc Toold -->
+   <div class="search-tools" style="margin-top: -50px;">
+    <form class="input-area" method="POST" action="/search">
+        <div id="form-id" class="form-group row">
+            <!-- <label for="inputText" class="col-sm-2 col-form-label">Search</label> -->
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords">
+            </div>
+            <button type="submit" class="btn btn-success  col-sm-2 col-form-button">Submit</button>
+    </form>  
+        </div>
+   </div>
+   <!-- Table Struct -->
+   <div style="margin-top:50px ;">
         <table id="example" class="table table-hover table-bordered">
             <thead>
                 <tr>
@@ -54,13 +66,7 @@
             </tbody>
         </table>
     </div>
-    <form class="input-area" method="POST" action="/search">
-        <div id="form-id" class="form-group row">
-            <label for="inputText" class="col-sm-2 col-form-label">Makale Arayın</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputText" name="keyword">
-            </div>
-    </form>
+
     
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

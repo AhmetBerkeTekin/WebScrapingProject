@@ -22,7 +22,35 @@ exports.scholarSearch = async (req, res) => {
   
       // console log the next page results
       await page.waitForNavigation();
-      console.log('New page URL:', page.url());
+      // console.log('New page URL:', page.url());
+      
+
+      // title
+      const titles = await page.$$eval('.gs_ri> h3 > a', titles => {  
+        return titles.map(titles => titles.textContent);
+      });
+      console.log(titles)
+    
+     // Alıntılanma sayısı
+      const citationsNumber = await page.$$eval('div.gs_fl.gs_flb > a', citationsNumber => {
+        return citationsNumber.map(citationsNumber => citationsNumber.textContent);
+      });
+      
+       for(let aElement of citationsNumber ){
+        if(aElement.includes('Alıntılanma sayısı')){
+          console.log(aElement.trim())
+        }
+      }
+
+
+
+  //url adress
+  const urlAdress = await page.$$eval('.gs_ri > h3 > a', urlAdress => {
+    return urlAdress.map(urlAdress => urlAdress.getAttribute('href'));
+  });
+  
+  console.log(urlAdress);
+    
 
       res.redirect('/')
   };
