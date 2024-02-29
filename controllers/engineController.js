@@ -18,6 +18,7 @@ exports.scholarSearch = async (req, res) => {
 
   const titles = []
   const urlAdresses = []
+  const quatotions = []
 
   const divs = await page.$$eval('.gs_r.gs_or.gs_scl', (divs) => {
     const results = []
@@ -33,6 +34,16 @@ exports.scholarSearch = async (req, res) => {
             href: link.getAttribute('href'),
           })
         })
+        const citations = div.querySelectorAll('.gs_fl.gs_flb > a')
+        citations.forEach((citation)=>{
+          if(citation.textContent.includes('Alıntılanma sayısı')){
+            if (citation.textContent.trim()) {
+              results.push({
+                divCitation: citation.textContent.trim()
+              })
+            }
+          }
+        })
       }
     })
 
@@ -41,9 +52,19 @@ exports.scholarSearch = async (req, res) => {
 
   divs.forEach(({ text }) => titles.push(text))
   divs.forEach(({ href }) => urlAdresses.push(href))
-  console.log(titles)
-  console.log('\n\n\n')
-  console.log(urlAdresses)
-
+  divs.forEach(({ divCitation }) => quatotions.push(divCitation))
+  const filteredTitles = titles.filter(function (element) {
+    return element !== undefined;
+    });
+  const filteredUrlAdresses = urlAdresses.filter(function (element) {
+    return element !== undefined;
+    });
+  const filteredCitations = quatotions.filter(function (element) {
+    return element !== undefined;
+    });
+  console.log(filteredTitles)
+  console.log(filteredUrlAdresses)
+  console.log(filteredCitations)
+ 
   res.redirect('/')
 }
