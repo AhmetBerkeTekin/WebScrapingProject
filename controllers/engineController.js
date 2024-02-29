@@ -24,32 +24,42 @@ exports.scholarSearch = async (req, res) => {
       await page.waitForNavigation();
       // console.log('New page URL:', page.url());
       
+    const titles = []
+    const urlAdresses = []
 
-      // title
-      const titles = await page.$$eval('.gs_ri> h3 > a', titles => {  
-        return titles.map(titles => titles.textContent);
-      });
-      console.log(titles)
+
+      const divs = await page.$$eval('.gs_r.gs_or.gs_scl', divs => {
+        // Sonuçları depolamak için bir dizi oluştur
+        const results = [];
     
-     // Alıntılanma sayısı
-      const citationsNumber = await page.$$eval('div.gs_fl.gs_flb > a', citationsNumber => {
-        return citationsNumber.map(citationsNumber => citationsNumber.textContent);
+        // Her bir div için kontrol et
+        divs.forEach(div => {
+          // Div içinde pdf yazısı geçiyor mu kontrol et
+          const hasPdfText = div.textContent.includes('PDF');
+    
+          if (hasPdfText) {
+            // pdf yazısı varsa, içindeki h3 > a elemanlarını al
+            const links = div.querySelectorAll('.gs_ri > h3 > a');
+            links.forEach(link => {
+              // Her bir linkin içeriğini ve href özelliğini alarak sonuçlara ekle
+              results.push({
+                text: link.textContent.trim(),
+                href: link.getAttribute('href')
+              });
+            });
+          }
+        });
+    
+        return results;
       });
-      
-       for(let aElement of citationsNumber ){
-        if(aElement.includes('Alıntılanma sayısı')){
-          console.log(aElement.trim())
-        }
-      }
+    
+      // Elde edilen verileri yazdır
+      divs.forEach(({text}) => titles.push(text))
+      divs.forEach(({href}) => urlAdresses.push(href))
+      console.log(titles)
+      console.log('\n\n\n')
+      console.log(urlAdresses)
 
-
-
-  //url adress
-  const urlAdress = await page.$$eval('.gs_ri > h3 > a', urlAdress => {
-    return urlAdress.map(urlAdress => urlAdress.getAttribute('href'));
-  });
-  
-  console.log(urlAdress);
     
 
       res.redirect('/')
