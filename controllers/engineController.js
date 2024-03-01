@@ -74,21 +74,17 @@ exports.scholarSearch = async (req, res) => {
   console.log(pdfLinks)
 
   const promises = pdfLinks.map((url, i) => {
-    return downloadPDF(url, `example${i}.pdf`)
+    return downloadPDF(url, `${downloadPath}example${i}.pdf`)
       .then(() => ({ status: 'fulfilled' }))
       .catch((error) => ({ status: 'rejected', reason: error }))
   })
-  Promise.allSettled(promises).then((results) => {
-    results.forEach((result, i) => {
-      if (result.status === 'fulfilled') {
-        console.log(`example${i}.pdf dosyası başarıyla indirildi.`)
-      } else {
-        console.error(
-          `example${i}.pdf dosyası indirilemedi. Hata: ${result.reason}`
-        )
-      }
-    })
-  })
+  const allPromise = Promise.all(promises)
+  try {
+    const values = await allPromise
+    console.log(values) 
+  } catch (error) {
+    console.log(error) 
+  }
   res.redirect('/')
 }
 // Fonksiyon 1: Başlık Bulma
