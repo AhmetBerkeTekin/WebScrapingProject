@@ -14,24 +14,34 @@ exports.scholarSearch = async (req, res) => {
   var keyword = ""
   var isSpelledCorrectly = dictionary.check(req.body.keyword)
   if(!isSpelledCorrectly){
+    console.log("Burdayız")
       var array = dictionary.suggest(req.body.keyword)
-      var originalWord = req.body.keyword;
-      var closestMatch;
-      var maxSimilarity = -1;
-      array.forEach(function(suggestedWord) {
-        var similarity = 0;
-        for (var i = 0; i < originalWord.length; i++) {
-            if (originalWord[i] === suggestedWord[i]) {
-                similarity++;
-            }
-        }
-        if (similarity > maxSimilarity) {
-            maxSimilarity = similarity;
-            closestMatch = suggestedWord;
-        }
-    });
+      if(array.length != 0){
+        var originalWord = req.body.keyword;
+        var closestMatch;
+        var maxSimilarity = -1;
+        array.forEach(function(suggestedWord) {
+          var similarity = 0;
+          for (var i = 0; i < originalWord.length; i++) {
+              if (originalWord[i] === suggestedWord[i]) {
+                  similarity++;
+              }
+          }
+          if (similarity > maxSimilarity) {
+              maxSimilarity = similarity;
+              closestMatch = suggestedWord;
+          }
+      });
+      keyword = closestMatch
+      }
+      else{
+        keyword = req.body.keyword
+      }
   }
-  keyword = closestMatch
+  else{
+    keyword = req.body.keyword
+  }
+  
   console.log(keyword)
   
   const browser = await puppeteer.launch({ headless: false })
@@ -82,7 +92,6 @@ exports.scholarSearch = async (req, res) => {
       })
       return results
     })
-
     const titles = findTitles(divs)
     const urls = findUrls(divs)
     const citations = findCitations(divs)
