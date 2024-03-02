@@ -82,11 +82,15 @@ exports.scholarSearch = async (req, res) => {
       })
       return results
     })
-  
+   
+    
     const titles = findTitles(divs)
     const urls = findUrls(divs)
     const citations = findCitations(divs)
     const pdfLinks = findPDFLinks(divs)
+
+   // const sortedCitations = sortByCitationCount(citations);
+    //console.log(sortedCitations);
   
     const promises = pdfLinks.map((url, i) => {
       return downloadPDF(url, `example${i}.pdf`)
@@ -173,3 +177,27 @@ async function downloadPDF(url, destination) {
     throw new Error('Error while downloading: ' + error.message);
   }
 }
+
+/*
+function sortByCitationCount(citations) {
+  // Alıntılanma sayılarını içeren nesneleri sıralamadan önce bu sayıları alarak bir dizi oluşturuyoruz
+  const citationCounts = citations.map(citation => {
+    // divCitation özelliğini kontrol et
+    const citationText = citation.divCitation;
+    if (citationText) {
+      const citationCount = parseInt(citationText.match(/\d+/)[0]);
+      return { citation, count: citationCount };
+    } else {
+      // divCitation özelliği tanımlı değilse, bu nesneyi dışarıda tut
+      return null;
+    }
+  }).filter(item => item !== null); // null olmayan nesneleri filtrele
+
+  // Alıntılanma sayılarına göre nesneleri sıralıyoruz
+  citationCounts.sort((a, b) => a.count - b.count);
+
+  // Sıralı nesneleri içeren dizi oluşturuyoruz
+  const sortedCitations = citationCounts.map(item => item.citation);
+
+  return sortedCitations;
+}*/

@@ -12,17 +12,28 @@
     <script async src="https://cse.google.com/cse.jsjs?cx=b2809a9ebea4a4ffc">
     </script>
     <!-- Searc Toold -->
-   <div class="search-tools" style="margin-top: -50px;">
-    <form class="input-area" method="POST" action="/search">
-        <div id="form-id" class="form-group row">
-            <!-- <label for="inputText" class="col-sm-2 col-form-label">Search</label> -->
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords">
-            </div>
-            <button type="submit" class="btn btn-success  col-sm-2 col-form-button">Submit</button>
-    </form>  
+   <div class="search-tools" >
+    <div class="container text-center">
+        <div class="row">
+          <div class="col sm-6" style="margin-top: -70px;">
+            <form class="input-area" method="POST" action="/search">
+                <div id="form-id" class="form-group row">
+                    <div class="col ">
+                      <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords">
+                    </div>
+                    <button type="submit" class="btn btn-success  col-sm-2 col-form-button">Submit</button></div>
+            </form> 
+          </div>
+          <div class="col sm-6">
+            <select class="form-select" aria-label="Default select example">
+                <option selected>Sıralama Türü Seçiniz</option>
+                <option value="1">Atıf Sayısı: az => çok</option>
+                <option value="2">Yayımlanma Tarihi: önce=>sonra</option>
+              </select>
+          </div>
         </div>
-   </div>
+      </div>
+        </div>
    <!-- Table Struct -->
    <div style="margin-top:50px ;">
         <table id="example" class="table table-hover table-bordered">
