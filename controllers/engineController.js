@@ -171,12 +171,15 @@ function findPDFLinks(divs) {
   })
   return pdfLinks
 }
-function findAuthors(divs){
-  const authorsArray = []
-  divs.forEach(({authors}) =>{
-    authorsArray.push(authors)
-  })
-  return authorsArray
+function findAuthors(divs) {
+  const authorsArray = [];
+  divs.forEach(({ authors }) => {
+    // Eğer authors özelliği tanımlı ise ve undefined değilse, authorsArray'e ekliyoruz
+    if (authors !== undefined) {
+      authorsArray.push(authors);
+    }
+  });
+  return authorsArray;
 }
 function extractCitationNumber(citations) {
   for (let i = 0; i < citations.length; i++) {
