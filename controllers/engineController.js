@@ -2,12 +2,38 @@ const puppeteer = require('puppeteer')
 const https = require('https')
 const http = require('http')
 const fs = require('fs')
+const axios = require('axios');
+const Typo = require("typo-js");
+var dictionary = new Typo('en_US');
+
 const downloadPath =
   'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
 
 exports.scholarSearch = async (req, res) => {
   console.log(req.body.keyword)
-  const keyword = req.body.keyword
+  var keyword = ""
+  var isSpelledCorrectly = dictionary.check(req.body.keyword)
+  if(!isSpelledCorrectly){
+      var array = dictionary.suggest(req.body.keyword)
+      var originalWord = req.body.keyword;
+      var closestMatch;
+      var maxSimilarity = -1;
+      array.forEach(function(suggestedWord) {
+        var similarity = 0;
+        for (var i = 0; i < originalWord.length; i++) {
+            if (originalWord[i] === suggestedWord[i]) {
+                similarity++;
+            }
+        }
+        if (similarity > maxSimilarity) {
+            maxSimilarity = similarity;
+            closestMatch = suggestedWord;
+        }
+    });
+  }
+  keyword = closestMatch
+  console.log(keyword)
+  
   const browser = await puppeteer.launch({ headless: false })
   const page = await browser.newPage()
 
@@ -81,9 +107,9 @@ exports.scholarSearch = async (req, res) => {
   const allPromise = Promise.all(promises)
   try {
     const values = await allPromise
-    console.log(values) 
+    console.log(values)
   } catch (error) {
-    console.log(error) 
+    console.log(error)
   }
   res.redirect('/')
 }
@@ -130,37 +156,22 @@ function extractCitationNumber(citations) {
     citations[i] = citations[i].replace(/[^0-9]/g, '')
   }
 }
-function downloadPDF(url, destination) {
-  return new Promise((resolve, reject) => {
-    const file = fs.createWriteStream(destination)
-    if (url.includes('https://')) {
-      https
-        .get(url, (response) => {
-          response.pipe(file)
-          file.on('finish', () => {
-            file.close()
-            resolve()
-          })
-        })
-        .on('error', (err) => {
-          fs.unlink(destination, () => {
-            reject(err.message)
-          })
-        })
-    } else if (url.includes('http://')) {
-      http
-        .get(url, (response) => {
-          response.pipe(file)
-          file.on('finish', () => {
-            file.close()
-            resolve()
-          })
-        })
-        .on('error', (err) => {
-          fs.unlink(destination, () => {
-            reject(err.message)
-          })
-        })
-    }
-  })
+async function downloadPDF(url, destination) {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      responseType: 'stream'
+    });
+
+    const writer = fs.createWriteStream(destination);
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+  } catch (error) {
+    throw new Error('Error while downloading: ' + error.message);
+  }
 }
