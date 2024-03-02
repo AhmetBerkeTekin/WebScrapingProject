@@ -7,31 +7,41 @@ const Typo = require("typo-js");
 var dictionary = new Typo('en_US');
 
 const downloadPath =
-  'C:\\Users\\cetle\\OneDrive\\Masaüstü\\web-scraiping2\\WebScrapingProject\\public\\PDFFiles\\'
+  'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
 
 exports.scholarSearch = async (req, res) => {
   console.log(req.body.keyword)
   var keyword = ""
   var isSpelledCorrectly = dictionary.check(req.body.keyword)
   if(!isSpelledCorrectly){
+    console.log("Burdayız")
       var array = dictionary.suggest(req.body.keyword)
-      var originalWord = req.body.keyword;
-      var closestMatch;
-      var maxSimilarity = -1;
-      array.forEach(function(suggestedWord) {
-        var similarity = 0;
-        for (var i = 0; i < originalWord.length; i++) {
-            if (originalWord[i] === suggestedWord[i]) {
-                similarity++;
-            }
-        }
-        if (similarity > maxSimilarity) {
-            maxSimilarity = similarity;
-            closestMatch = suggestedWord;
-        }
-    });
+      if(array.length != 0){
+        var originalWord = req.body.keyword;
+        var closestMatch;
+        var maxSimilarity = -1;
+        array.forEach(function(suggestedWord) {
+          var similarity = 0;
+          for (var i = 0; i < originalWord.length; i++) {
+              if (originalWord[i] === suggestedWord[i]) {
+                  similarity++;
+              }
+          }
+          if (similarity > maxSimilarity) {
+              maxSimilarity = similarity;
+              closestMatch = suggestedWord;
+          }
+      });
+      keyword = closestMatch
+      }
+      else{
+        keyword = req.body.keyword
+      }
   }
-  keyword = closestMatch
+  else{
+    keyword = req.body.keyword
+  }
+  
   console.log(keyword)
   
   const browser = await puppeteer.launch({ headless: false })
@@ -82,51 +92,14 @@ exports.scholarSearch = async (req, res) => {
       })
       return results
     })
-   
-    
     const titles = findTitles(divs)
     const urls = findUrls(divs)
     const citations = findCitations(divs)
     const pdfLinks = findPDFLinks(divs)
 
-   // const sortedCitations = sortByCitationCount(citations);
-    //console.log(sortedCitations);
-  
-    const promises = pdfLinks.map((url, i) => {
-      return downloadPDF(url, `example${i}.pdf`)
-        .then(() => ({ status: 'fulfilled' }))
-        .catch((error) => ({ status: 'rejected', reason: error }))
-    })
-  
-    try {
-      const values = await Promise.all(promises)
-      console.log(values) 
-    } catch (error) {
-      console.log(error) 
-    }
-  
     return { titles, urls, citations, pdfLinks }
   }
-  
-  async function downloadPDF(url, destination) {
-    const file = fs.createWriteStream(destination);
-    const protocol = url.startsWith('https') ? https : http;
-  
-    return new Promise((resolve, reject) => {
-      protocol.get(url, (response) => {
-        response.pipe(file);
-        file.on('finish', () => {
-          file.close(); // Stream'i kapat
-          resolve();
-        });
-      }).on('error', (err) => {
-        fs.unlink(destination, () => {
-          reject(err.message);
-        });
-      });
-    });
-  }
-  
+
   // Kullanım
   const { titles, urls, citations, pdfLinks } = await scrapeData(page)
   extractCitationNumber(citations)
@@ -147,15 +120,49 @@ exports.scholarSearch = async (req, res) => {
   } catch (error) {
     console.log(error)
   }
-  
-  function findUrls(divs) {
-    const urls = [];
-    divs.forEach(({ href }) => {
-      if (href) {
-        urls.push(href);
-      }
-    });
-    return urls;
+  res.redirect('/')
+}
+// Fonksiyon 1: Başlık Bulma
+function findTitles(divs) {
+  const titles = []
+  divs.forEach(({ text }) => {
+    if (text) {
+      titles.push(text)
+    }
+  })
+  return titles
+}
+// Fonksiyon 2: URL Adresi Bulma
+function findUrls(divs) {
+  const urls = []
+  divs.forEach(({ href }) => {
+    if (href) {
+      urls.push(href)
+    }
+  })
+  return urls
+}
+function findCitations(divs) {
+  const citations = []
+  divs.forEach(({ divCitation }) => {
+    if (divCitation) {
+      citations.push(divCitation)
+    }
+  })
+  return citations
+}
+function findPDFLinks(divs) {
+  const pdfLinks = []
+  divs.forEach(({ pdfLink }) => {
+    if (pdfLink) {
+      pdfLinks.push(pdfLink)
+    }
+  })
+  return pdfLinks
+}
+function extractCitationNumber(citations) {
+  for (let i = 0; i < citations.length; i++) {
+    citations[i] = citations[i].replace(/[^0-9]/g, '')
   }
 }
 async function downloadPDF(url, destination) {
@@ -177,27 +184,3 @@ async function downloadPDF(url, destination) {
     throw new Error('Error while downloading: ' + error.message);
   }
 }
-
-/*
-function sortByCitationCount(citations) {
-  // Alıntılanma sayılarını içeren nesneleri sıralamadan önce bu sayıları alarak bir dizi oluşturuyoruz
-  const citationCounts = citations.map(citation => {
-    // divCitation özelliğini kontrol et
-    const citationText = citation.divCitation;
-    if (citationText) {
-      const citationCount = parseInt(citationText.match(/\d+/)[0]);
-      return { citation, count: citationCount };
-    } else {
-      // divCitation özelliği tanımlı değilse, bu nesneyi dışarıda tut
-      return null;
-    }
-  }).filter(item => item !== null); // null olmayan nesneleri filtrele
-
-  // Alıntılanma sayılarına göre nesneleri sıralıyoruz
-  citationCounts.sort((a, b) => a.count - b.count);
-
-  // Sıralı nesneleri içeren dizi oluşturuyoruz
-  const sortedCitations = citationCounts.map(item => item.citation);
-
-  return sortedCitations;
-}*/
