@@ -88,6 +88,15 @@ exports.scholarSearch = async (req, res) => {
               pdfLink: link.getAttribute('href'),
             })
           })
+          const authors = div.querySelectorAll('div.gs_a')
+          authors.forEach((authorElement)=>{
+            const authorText = authorElement.textContent.trim();
+            const authorsPart = authorText.split('-')[0].trim();
+            //const individualAuthors = authorsPart.split(',');
+            results.push({
+              authors: authorsPart
+            })
+          })
         }
       })
       return results
@@ -96,17 +105,19 @@ exports.scholarSearch = async (req, res) => {
     const urls = findUrls(divs)
     const citations = findCitations(divs)
     const pdfLinks = findPDFLinks(divs)
+    const authors = findAuthors(divs)
 
-    return { titles, urls, citations, pdfLinks }
+    return { titles, urls, citations, pdfLinks, authors }
   }
 
   // Kullanım
-  const { titles, urls, citations, pdfLinks } = await scrapeData(page)
+  const { titles, urls, citations, pdfLinks, authors } = await scrapeData(page)
   extractCitationNumber(citations)
   console.log(titles)
   console.log(urls)
   console.log(citations)
   console.log(pdfLinks)
+  console.log(authors)
 
   const promises = pdfLinks.map((url, i) => {
     return downloadPDF(url, `${downloadPath}example${i}.pdf`)
@@ -159,6 +170,13 @@ function findPDFLinks(divs) {
     }
   })
   return pdfLinks
+}
+function findAuthors(divs){
+  const authorsArray = []
+  divs.forEach(({authors}) =>{
+    authorsArray.push(authors)
+  })
+  return authorsArray
 }
 function extractCitationNumber(citations) {
   for (let i = 0; i < citations.length; i++) {
