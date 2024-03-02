@@ -2,12 +2,38 @@ const puppeteer = require('puppeteer')
 const https = require('https')
 const http = require('http')
 const fs = require('fs')
+const axios = require('axios');
+const Typo = require("typo-js");
+var dictionary = new Typo('en_US');
+
 const downloadPath =
   'C:\\Users\\cetle\\OneDrive\\Masaüstü\\web-scraiping\\public\\PDFFiles\\'
 
 exports.scholarSearch = async (req, res) => {
   console.log(req.body.keyword)
-  const keyword = req.body.keyword
+  var keyword = ""
+  var isSpelledCorrectly = dictionary.check(req.body.keyword)
+  if(!isSpelledCorrectly){
+      var array = dictionary.suggest(req.body.keyword)
+      var originalWord = req.body.keyword;
+      var closestMatch;
+      var maxSimilarity = -1;
+      array.forEach(function(suggestedWord) {
+        var similarity = 0;
+        for (var i = 0; i < originalWord.length; i++) {
+            if (originalWord[i] === suggestedWord[i]) {
+                similarity++;
+            }
+        }
+        if (similarity > maxSimilarity) {
+            maxSimilarity = similarity;
+            closestMatch = suggestedWord;
+        }
+    });
+  }
+  keyword = closestMatch
+  console.log(keyword)
+  
   const browser = await puppeteer.launch({ headless: false })
   const page = await browser.newPage()
 
@@ -98,6 +124,7 @@ exports.scholarSearch = async (req, res) => {
   }
   
   // Kullanım
+<<<<<<< HEAD
   const { titles, urls, citations, pdfLinks } = await scrapeData(page);
   extractCitationNumber(citations);
   console.log(titles);
@@ -116,6 +143,26 @@ exports.scholarSearch = async (req, res) => {
       }
     });
     return titles;
+=======
+  const { titles, urls, citations, pdfLinks } = await scrapeData(page)
+  extractCitationNumber(citations)
+  console.log(titles)
+  console.log(urls)
+  console.log(citations)
+  console.log(pdfLinks)
+
+  const promises = pdfLinks.map((url, i) => {
+    return downloadPDF(url, `${downloadPath}example${i}.pdf`)
+      .then(() => ({ status: 'fulfilled' }))
+      .catch((error) => ({ status: 'rejected', reason: error }))
+  })
+  const allPromise = Promise.all(promises)
+  try {
+    const values = await allPromise
+    console.log(values)
+  } catch (error) {
+    console.log(error)
+>>>>>>> 851935715a3f97c5effff73ea2e437a782d0a93a
   }
   
   function findUrls(divs) {
@@ -127,6 +174,7 @@ exports.scholarSearch = async (req, res) => {
     });
     return urls;
   }
+<<<<<<< HEAD
   
   function findCitations(divs) {
     const citations = [];
@@ -153,3 +201,25 @@ exports.scholarSearch = async (req, res) => {
       citations[i] = citations[i].replace(/[^0-9]/g, '');
     }
   }}
+=======
+}
+async function downloadPDF(url, destination) {
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      responseType: 'stream'
+    });
+
+    const writer = fs.createWriteStream(destination);
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+  } catch (error) {
+    throw new Error('Error while downloading: ' + error.message);
+  }
+}
+>>>>>>> 851935715a3f97c5effff73ea2e437a782d0a93a
