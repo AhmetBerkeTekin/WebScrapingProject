@@ -97,6 +97,15 @@ exports.scholarSearch = async (req, res) => {
               authors: authorsPart
             })
           })
+          const dates = div.querySelectorAll('div.gs_a')
+          dates.forEach((dateElement)=>{
+            const dateText = dateElement.textContent.trim();
+            const yearMatch = dateText.match(/\d{4}/); // Dört haneli sayısal deseni bul
+            if (yearMatch) {
+                const year = parseInt(yearMatch[0]);
+                results.push({ dates: year });
+            }
+          })
         }
       })
       return results
@@ -106,18 +115,20 @@ exports.scholarSearch = async (req, res) => {
     const citations = findCitations(divs)
     const pdfLinks = findPDFLinks(divs)
     const authors = findAuthors(divs)
+    const dates =findDate(divs)
 
-    return { titles, urls, citations, pdfLinks, authors }
+    return { titles, urls, citations, pdfLinks, authors,dates}
   }
 
   // Kullanım
-  const { titles, urls, citations, pdfLinks, authors } = await scrapeData(page)
+  const { titles, urls, citations, pdfLinks, authors,dates } = await scrapeData(page)
   extractCitationNumber(citations)
   console.log(titles)
   console.log(urls)
   console.log(citations)
   console.log(pdfLinks)
   console.log(authors)
+  console.log(dates)
 
   const promises = pdfLinks.map((url, i) => {
     return downloadPDF(url, `${downloadPath}example${i}.pdf`)
@@ -180,6 +191,17 @@ function findAuthors(divs) {
     }
   });
   return authorsArray;
+}
+
+function findDate(divs){
+  const dateArray = [];
+  divs.forEach(({dates}) =>{
+    if (dates) {
+    dateArray.push(dates);
+  }
+  });
+  return dateArray;
+  
 }
 function extractCitationNumber(citations) {
   for (let i = 0; i < citations.length; i++) {
