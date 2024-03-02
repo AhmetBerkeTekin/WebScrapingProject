@@ -7,7 +7,7 @@ const Typo = require("typo-js");
 var dictionary = new Typo('en_US');
 
 const downloadPath =
-  'C:\\Users\\cetle\\OneDrive\\Masaüstü\\web-scraiping\\public\\PDFFiles\\'
+  'C:\\Users\\cetle\\OneDrive\\Masaüstü\\web-scraiping2\\WebScrapingProject\\public\\PDFFiles\\'
 
 exports.scholarSearch = async (req, res) => {
   console.log(req.body.keyword)
@@ -124,26 +124,6 @@ exports.scholarSearch = async (req, res) => {
   }
   
   // Kullanım
-<<<<<<< HEAD
-  const { titles, urls, citations, pdfLinks } = await scrapeData(page);
-  extractCitationNumber(citations);
-  console.log(titles);
-  console.log(urls);
-  console.log(citations);
-  console.log(pdfLinks);
-  
-  res.redirect('/');
-  
-  // Yardımcı Fonksiyonlar
-  function findTitles(divs) {
-    const titles = [];
-    divs.forEach(({ text }) => {
-      if (text) {
-        titles.push(text);
-      }
-    });
-    return titles;
-=======
   const { titles, urls, citations, pdfLinks } = await scrapeData(page)
   extractCitationNumber(citations)
   console.log(titles)
@@ -162,7 +142,6 @@ exports.scholarSearch = async (req, res) => {
     console.log(values)
   } catch (error) {
     console.log(error)
->>>>>>> 851935715a3f97c5effff73ea2e437a782d0a93a
   }
   
   function findUrls(divs) {
@@ -174,34 +153,6 @@ exports.scholarSearch = async (req, res) => {
     });
     return urls;
   }
-<<<<<<< HEAD
-  
-  function findCitations(divs) {
-    const citations = [];
-    divs.forEach(({ divCitation }) => {
-      if (divCitation) {
-        citations.push(divCitation);
-      }
-    });
-    return citations;
-  }
-  
-  function findPDFLinks(divs) {
-    const pdfLinks = [];
-    divs.forEach(({ pdfLink }) => {
-      if (pdfLink) {
-        pdfLinks.push(pdfLink);
-      }
-    });
-    return pdfLinks;
-  }
-  
-  function extractCitationNumber(citations) {
-    for (let i = 0; i < citations.length; i++) {
-      citations[i] = citations[i].replace(/[^0-9]/g, '');
-    }
-  }}
-=======
 }
 async function downloadPDF(url, destination) {
   try {
@@ -222,4 +173,3 @@ async function downloadPDF(url, destination) {
     throw new Error('Error while downloading: ' + error.message);
   }
 }
->>>>>>> 851935715a3f97c5effff73ea2e437a782d0a93a
