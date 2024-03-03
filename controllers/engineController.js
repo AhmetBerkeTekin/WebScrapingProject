@@ -47,24 +47,22 @@ exports.scholarSearch = async (req, res) => {
   const browser = await puppeteer.launch({ headless: false })
   const page = await browser.newPage()
 
-  await page.goto('https://scholar.google.com')
+  await page.goto('https://dergipark.org.tr/tr/')
 
   await page.setViewport({ width: 1080, height: 1024 })
 
   await page.type('input[name="q"]', keyword)
 
-  const submitBtn = await page.$('button[type=submit]')
+  const submitBtn = await page.$('button[id=home-search-btn]');
   await submitBtn.evaluate((btn) => btn.click())
   await page.waitForNavigation()
 
   async function scrapeData(page) {
-    const divs = await page.$$eval('.gs_r.gs_or.gs_scl', (divs) => {
+    const divs = await page.$$eval('div.card-body', (divs) => {
       const results = []
       //div objelerine atıyoruz sonuçları
       divs.forEach((div) => {
-        const hasPdfText = div.textContent.includes('PDF')
-        if (hasPdfText) {
-          const links = div.querySelectorAll('.gs_ri > h3 > a')
+          const links = div.querySelectorAll('h5.card-title > a')
           links.forEach((link) => {
             results.push({
               text: link.textContent.trim(),
@@ -72,76 +70,75 @@ exports.scholarSearch = async (req, res) => {
             })
           })
           //başka div objeleri
-          const citations = div.querySelectorAll('.gs_fl.gs_flb > a')
-          citations.forEach((citation) => {
-            if (citation.textContent.includes('Alıntılanma sayısı')) {
-              if (citation.textContent.trim()) {
-                results.push({
-                  divCitation: citation.textContent.trim(),
-                })
-              }
-            }
-          })
-          const pdfLinks = div.querySelectorAll('.gs_or_ggsm > a')
-          pdfLinks.forEach((link) => {
-            results.push({
-              pdfLink: link.getAttribute('href'),
-            })
-          })
-          const authors = div.querySelectorAll('div.gs_a')
-          authors.forEach((authorElement)=>{
-            const authorText = authorElement.textContent.trim();
-            const authorsPart = authorText.split('-')[0].trim();
-            //const individualAuthors = authorsPart.split(',');
-            results.push({
-              authors: authorsPart
-            })
-          })
-          const dates = div.querySelectorAll('div.gs_a')
-          dates.forEach((dateElement)=>{
-            const dateText = dateElement.textContent.trim();
-            const yearMatch = dateText.match(/\d{4}/); // Dört haneli sayısal deseni bul
-            if (yearMatch) {
-                const year = parseInt(yearMatch[0]);
-                results.push({ dates: year });
-            }
-          })
-        }
+          // const citations = div.querySelectorAll('.gs_fl.gs_flb > a')
+          // citations.forEach((citation) => {
+          //   if (citation.textContent.includes('Alıntılanma sayısı')) {
+          //     if (citation.textContent.trim()) {
+          //       results.push({
+          //         divCitation: citation.textContent.trim(),
+          //       })
+          //     }
+          //   }
+          // })
+          // const pdfLinks = div.querySelectorAll('.gs_or_ggsm > a')
+          // pdfLinks.forEach((link) => {
+          //   results.push({
+          //     pdfLink: link.getAttribute('href'),
+          //   })
+          // })
+          // const authors = div.querySelectorAll('div.gs_a')
+          // authors.forEach((authorElement)=>{
+          //   const authorText = authorElement.textContent.trim();
+          //   const authorsPart = authorText.split('-')[0].trim();
+          //   //const individualAuthors = authorsPart.split(',');
+          //   results.push({
+          //     authors: authorsPart
+          //   })
+          // })
+          // const dates = div.querySelectorAll('div.gs_a')
+          // dates.forEach((dateElement)=>{
+          //   const dateText = dateElement.textContent.trim();
+          //   const yearMatch = dateText.match(/\d{4}/); // Dört haneli sayısal deseni bul
+          //   if (yearMatch) {
+          //       const year = parseInt(yearMatch[0]);
+          //       results.push({ dates: year });
+          //   }
+          // })
       })
       return results
     })
     const titles = findTitles(divs)
     const urls = findUrls(divs)
-    const citations = findCitations(divs)
-    const pdfLinks = findPDFLinks(divs)
-    const authors = findAuthors(divs)
-    const dates =findDate(divs)
+    // const citations = findCitations(divs)
+    // const pdfLinks = findPDFLinks(divs)
+    // const authors = findAuthors(divs)
+    // const dates =findDate(divs)
 
-    return { titles, urls, citations, pdfLinks, authors,dates}
+    return { titles, urls}
   }
 
   // Kullanım
-  const { titles, urls, citations, pdfLinks, authors,dates } = await scrapeData(page)
-  extractCitationNumber(citations)
+  const { titles, urls } = await scrapeData(page)
+  // extractCitationNumber(citations)
   console.log(titles)
   console.log(urls)
-  console.log(citations)
-  console.log(pdfLinks)
-  console.log(authors)
-  console.log(dates)
+  // console.log(citations)
+  // console.log(pdfLinks)
+  // console.log(authors)
+  // console.log(dates)
 
-  const promises = pdfLinks.map((url, i) => {
-    return downloadPDF(url, `${downloadPath}example${i}.pdf`)
-      .then(() => ({ status: 'fulfilled' }))
-      .catch((error) => ({ status: 'rejected', reason: error }))
-  })
-  const allPromise = Promise.all(promises)
-  try {
-    const values = await allPromise
-    console.log(values)
-  } catch (error) {
-    console.log(error)
-  }
+  // const promises = pdfLinks.map((url, i) => {
+  //   return downloadPDF(url, `${downloadPath}example${i}.pdf`)
+  //     .then(() => ({ status: 'fulfilled' }))
+  //     .catch((error) => ({ status: 'rejected', reason: error }))
+  // })
+  // const allPromise = Promise.all(promises)
+  // try {
+  //   const values = await allPromise
+  //   console.log(values)
+  // } catch (error) {
+  //   console.log(error)
+  // }
   res.redirect('/')
 }
 // Fonksiyon 1: Başlık Bulma
