@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+
 const https = require('https')
 const http = require('http')
 const fs = require('fs')
@@ -69,76 +70,28 @@ exports.scholarSearch = async (req, res) => {
               href: link.getAttribute('href'),
             })
           })
-          //başka div objeleri
-          // const citations = div.querySelectorAll('.gs_fl.gs_flb > a')
-          // citations.forEach((citation) => {
-          //   if (citation.textContent.includes('Alıntılanma sayısı')) {
-          //     if (citation.textContent.trim()) {
-          //       results.push({
-          //         divCitation: citation.textContent.trim(),
-          //       })
-          //     }
-          //   }
-          // })
-          // const pdfLinks = div.querySelectorAll('.gs_or_ggsm > a')
-          // pdfLinks.forEach((link) => {
-          //   results.push({
-          //     pdfLink: link.getAttribute('href'),
-          //   })
-          // })
-          // const authors = div.querySelectorAll('div.gs_a')
-          // authors.forEach((authorElement)=>{
-          //   const authorText = authorElement.textContent.trim();
-          //   const authorsPart = authorText.split('-')[0].trim();
-          //   //const individualAuthors = authorsPart.split(',');
-          //   results.push({
-          //     authors: authorsPart
-          //   })
-          // })
-          // const dates = div.querySelectorAll('div.gs_a')
-          // dates.forEach((dateElement)=>{
-          //   const dateText = dateElement.textContent.trim();
-          //   const yearMatch = dateText.match(/\d{4}/); // Dört haneli sayısal deseni bul
-          //   if (yearMatch) {
-          //       const year = parseInt(yearMatch[0]);
-          //       results.push({ dates: year });
-          //   }
-          // })
       })
       return results
     })
+   
     const titles = findTitles(divs)
     const urls = findUrls(divs)
     // const citations = findCitations(divs)
     // const pdfLinks = findPDFLinks(divs)
     // const authors = findAuthors(divs)
     // const dates =findDate(divs)
+    const url = 'https://dergipark.org.tr/tr/pub/ijmsit/issue/69913/1119738';
+    extractDataFromPage(url);
 
     return { titles, urls}
   }
 
   // Kullanım
   const { titles, urls } = await scrapeData(page)
+
   // extractCitationNumber(citations)
   console.log(titles)
   console.log(urls)
-  // console.log(citations)
-  // console.log(pdfLinks)
-  // console.log(authors)
-  // console.log(dates)
-
-  // const promises = pdfLinks.map((url, i) => {
-  //   return downloadPDF(url, `${downloadPath}example${i}.pdf`)
-  //     .then(() => ({ status: 'fulfilled' }))
-  //     .catch((error) => ({ status: 'rejected', reason: error }))
-  // })
-  // const allPromise = Promise.all(promises)
-  // try {
-  //   const values = await allPromise
-  //   console.log(values)
-  // } catch (error) {
-  //   console.log(error)
-  // }
   res.redirect('/')
 }
 // Fonksiyon 1: Başlık Bulma
@@ -223,4 +176,18 @@ async function downloadPDF(url, destination) {
   } catch (error) {
     throw new Error('Error while downloading: ' + error.message);
   }
+}
+
+async function extractDataFromPage(url) {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto(url);
+
+  // Başlık
+  const title = await page.$eval('h3.article-title', element => element.textContent.trim());
+  console.log('Başlık:', title);
+
+
+
+  await browser.close();
 }
