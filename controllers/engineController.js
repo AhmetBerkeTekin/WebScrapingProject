@@ -1,12 +1,11 @@
 const puppeteer = require('puppeteer')
-
 const https = require('https')
 const http = require('http')
 const fs = require('fs')
 const axios = require('axios')
 const Typo = require('typo-js')
 var dictionary = new Typo('en_US')
-
+const publicationController = require('../controllers/publicationController')
 const downloadPath =
   'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
  
@@ -170,17 +169,27 @@ exports.scholarSearch = async (req, res) => {
   const doi = data.map((item) => item.doiNumber)
   const publicationType = data.map((item) => item.publicationType)
   const publicationDate = data.map((item) => item.publicationDate)
-  console.log(titles)
-  console.log(cleanedAuthors)
-  console.log(cleanedArticleKeywords)
-  console.log(engineKeywords)
-  console.log(publisher)
-  console.log(prefixedPdfs)
-  console.log(doi)
-  console.log(cleanedAbstract)
-  console.log(urls)
-  console.log(publicationType)
-  console.log(publicationDate)
+  let dateTarihler = [];
+
+  publicationDate.forEach((stringTarih) => {
+    const parts = stringTarih.split("."); // Stringi parçalayarak diziye dönüştürüyoruz
+    const formattedDateString = parts[2] + "-" + parts[1] + "-" + parts[0]; // Yıl, ay ve günü sırasıyla alarak ISO formatına dönüştürüyoruz
+    const dateObject = new Date(formattedDateString);
+    dateTarihler.push(dateObject);
+});
+
+  // console.log(titles)
+  // console.log(cleanedAuthors)
+  // console.log(cleanedArticleKeywords)
+  // console.log(engineKeywords)
+  // console.log(publisher)
+  // console.log(prefixedPdfs)
+  // console.log(doi)
+  // console.log(cleanedAbstract)
+  // console.log(urls)
+  // console.log(publicationType)
+  // console.log(publicationDate)
+   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler)
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
