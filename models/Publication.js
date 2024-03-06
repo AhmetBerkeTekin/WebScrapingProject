@@ -9,12 +9,12 @@ const PublicationSchema = new Schema({
     required: true,
   },
   authors: {
-    type: [String],
-    default: [],
+    type: String,
+    default: "",
   },
   publicationType: {
    type: String,
-   default: []
+   default:""
   },
   publicationDate:{
     type: Date,
@@ -24,10 +24,10 @@ const PublicationSchema = new Schema({
     type: String,
     default: ""
    },
-  engineKeywords: [String],
+  engineKeywords: String,
   publicationKeywords:  {
-    type:[String],
-    default:[]
+    type:String,
+    default:""
   },
   summary:{
     type: String,
@@ -35,14 +35,14 @@ const PublicationSchema = new Schema({
    },
   references: {
     type: String,
-    default: []
+    default: ""
    },
   quotationCount: {
     type: Number,
     default: 0,
   },
   doiNumber: {
-    type: Number,
+    type: String,
     required: false,
   },
   urlAdress: String,

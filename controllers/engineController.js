@@ -6,7 +6,7 @@ const axios = require('axios')
 const Typo = require('typo-js')
 const publicationController = require('../controllers/publicationController')
 var dictionary = new Typo('en_US')
-
+const publicationController = require('../controllers/publicationController')
 const downloadPath =
   'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
  
@@ -170,6 +170,15 @@ exports.scholarSearch = async (req, res) => {
   const doi = data.map((item) => item.doiNumber)
   const publicationType = data.map((item) => item.publicationType)
   const publicationDate = data.map((item) => item.publicationDate)
+  let dateTarihler = [];
+
+  publicationDate.forEach((stringTarih) => {
+    const parts = stringTarih.split("."); // Stringi parçalayarak diziye dönüştürüyoruz
+    const formattedDateString = parts[2] + "-" + parts[1] + "-" + parts[0]; // Yıl, ay ve günü sırasıyla alarak ISO formatına dönüştürüyoruz
+    const dateObject = new Date(formattedDateString);
+    dateTarihler.push(dateObject);
+});
+
   // console.log(titles)
   // console.log(cleanedAuthors)
   // console.log(cleanedArticleKeywords)
@@ -181,7 +190,7 @@ exports.scholarSearch = async (req, res) => {
   // console.log(urls)
   // console.log(publicationType)
   // console.log(publicationDate)
-  publicationController.createPublication(titles)
+   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler)
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
@@ -213,3 +222,5 @@ async function downloadPDF(url, destination) {
     throw new Error('Error while downloading: ' + error.message)
   }
 }
+ 
+
