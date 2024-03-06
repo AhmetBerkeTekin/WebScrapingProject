@@ -1,18 +1,13 @@
-const Publication =require('../models/Publication')
+const Publication = require('../models/Publication')
 
-exports.createPublication  = async () =>{
+exports.createPublication  = async (titles) =>{
     const publication =await Publication.create(); 
     try{
-          res.status(201).json({
-        status:'success',
-        publication
-    })
+        console.log(titles)
+  
     }
     catch{
-        res.status(400).json({
-            status:'fail',
-            error
-        })
+        
     }
   
 }

@@ -1,10 +1,10 @@
 const puppeteer = require('puppeteer')
-
 const https = require('https')
 const http = require('http')
 const fs = require('fs')
 const axios = require('axios')
 const Typo = require('typo-js')
+const publicationController = require('../controllers/publicationController')
 var dictionary = new Typo('en_US')
 
 const downloadPath =
@@ -170,17 +170,18 @@ exports.scholarSearch = async (req, res) => {
   const doi = data.map((item) => item.doiNumber)
   const publicationType = data.map((item) => item.publicationType)
   const publicationDate = data.map((item) => item.publicationDate)
-  console.log(titles)
-  console.log(cleanedAuthors)
-  console.log(cleanedArticleKeywords)
-  console.log(engineKeywords)
-  console.log(publisher)
-  console.log(prefixedPdfs)
-  console.log(doi)
-  console.log(cleanedAbstract)
-  console.log(urls)
-  console.log(publicationType)
-  console.log(publicationDate)
+  // console.log(titles)
+  // console.log(cleanedAuthors)
+  // console.log(cleanedArticleKeywords)
+  // console.log(engineKeywords)
+  // console.log(publisher)
+  // console.log(prefixedPdfs)
+  // console.log(doi)
+  // console.log(cleanedAbstract)
+  // console.log(urls)
+  // console.log(publicationType)
+  // console.log(publicationDate)
+  publicationController.createPublication(titles)
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
@@ -192,20 +193,6 @@ function findUrls(divs) {
     }
   })
   return urls
-}
-function findCitations(divs) {
-  const citations = []
-  divs.forEach(({ divCitation }) => {
-    if (divCitation) {
-      citations.push(divCitation)
-    }
-  })
-  return citations
-}
-function extractCitationNumber(citations) {
-  for (let i = 0; i < citations.length; i++) {
-    citations[i] = citations[i].replace(/[^0-9]/g, '')
-  }
 }
 async function downloadPDF(url, destination) {
   try {
