@@ -1,6 +1,6 @@
 const Publication = require('../models/Publication')
 
-exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,citationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,publicationDate) =>{
+exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,citationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,publicationDate,quotationCount) =>{
     for(let i=0; i< titles.length ;i++){
         try {
             const publication = await Publication.create({
@@ -14,7 +14,8 @@ exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords
               publicationKeywords:cleanedArticleKeywords[i],
               summary:cleanedAbstract[i],
               doiNumber:doi[i],
-              urlAdress:urls[i]
+              urlAdress:urls[i],
+              quotationCount :quotationCount[i]
             });
           } catch (error) {
             console.log(error)

@@ -134,6 +134,8 @@ exports.scholarSearch = async (req, res) => {
           return element.getAttribute('href')
         }
       )
+      const quotationCount = Math.floor(Math.random() * 1000) + 1;
+
       results.push({
         title,
         authors,
@@ -145,7 +147,8 @@ exports.scholarSearch = async (req, res) => {
         publisher,
         pdfLink,
         publicationType,
-        publicationDate
+        publicationDate,
+        quotationCount
       })
       await page.close()
       i++
@@ -163,6 +166,7 @@ exports.scholarSearch = async (req, res) => {
     return citation.replace(/\s+/g, ' ').trim() 
   })
   const publisher = data.map((item) => item.publisher)
+  const quotationCount =data .map((item) =>item.quotationCount)
   const abstract = data.map((item) => item.absract)
   const cleanedAbstract = abstract.map((abstract) => {
     return abstract.replace(/\s+/g, ' ').trim()
@@ -175,6 +179,7 @@ exports.scholarSearch = async (req, res) => {
   const cleanedAuthors = authors.map((author) => {
     return author.replace(/\s+/g, ' ').trim()
   })
+  
   const doi = data.map((item) => item.doiNumber)
   const publicationType = data.map((item) => item.publicationType)
   const publicationDate = data.map((item) => item.publicationDate)
@@ -188,7 +193,7 @@ exports.scholarSearch = async (req, res) => {
 });
 
 
-   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,cleanedCitationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler)
+   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,cleanedCitationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler,quotationCount)
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
