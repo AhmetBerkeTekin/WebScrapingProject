@@ -6,7 +6,6 @@ const axios = require('axios')
 const Typo = require('typo-js')
 const publicationController = require('../controllers/publicationController')
 var dictionary = new Typo('en_US')
-const publicationController = require('../controllers/publicationController')
 const downloadPath =
   'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
  
@@ -16,7 +15,6 @@ exports.scholarSearch = async (req, res) => {
   var keyword = ''
   var isSpelledCorrectly = dictionary.check(req.body.keyword)
   if (!isSpelledCorrectly) {
-    console.log('Burdayız')
     var array = dictionary.suggest(req.body.keyword)
     if (array.length != 0) {
       var originalWord = req.body.keyword
@@ -109,6 +107,11 @@ exports.scholarSearch = async (req, res) => {
           return element.textContent.trim()
         }
       )
+      const citationList = await page.$eval( 
+        '.article-citations', (lis) => { 
+        return lis.textContent.trim()  
+      });
+      
       const publicationType = await page.$eval(
         'table.record_properties tr:nth-child(3)',
         (row) => {
@@ -137,6 +140,7 @@ exports.scholarSearch = async (req, res) => {
         absract,
         engineKeywords,
         articleKeywords,
+        citationList,
         doiNumber,
         publisher,
         pdfLink,
@@ -154,6 +158,10 @@ exports.scholarSearch = async (req, res) => {
   const authors = data.map((item) => item.authors)
   const articleKeywords = data.map((item) => item.articleKeywords)
   const engineKeywords = data.map((item) => item.engineKeywords)
+  const citationList =data.map((item) =>item.citationList) 
+  const cleanedCitationList = citationList.map((citation) => {
+    return citation.replace(/\s+/g, ' ').trim() 
+  })
   const publisher = data.map((item) => item.publisher)
   const abstract = data.map((item) => item.absract)
   const cleanedAbstract = abstract.map((abstract) => {
@@ -179,18 +187,8 @@ exports.scholarSearch = async (req, res) => {
     dateTarihler.push(dateObject);
 });
 
-  // console.log(titles)
-  // console.log(cleanedAuthors)
-  // console.log(cleanedArticleKeywords)
-  // console.log(engineKeywords)
-  // console.log(publisher)
-  // console.log(prefixedPdfs)
-  // console.log(doi)
-  // console.log(cleanedAbstract)
-  // console.log(urls)
-  // console.log(publicationType)
-  // console.log(publicationDate)
-   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler)
+
+   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,cleanedCitationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler)
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
@@ -223,4 +221,5 @@ async function downloadPDF(url, destination) {
   }
 }
  
+
 

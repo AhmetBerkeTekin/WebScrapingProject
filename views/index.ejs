@@ -15,22 +15,25 @@
    <div class="search-tools" >
     <div class="container text-center">
         <div class="row">
-          <div class="col sm-6" style="margin-top: -70px;">
+          <div class="col sm-6" >
             <form class="input-area" method="POST" action="/search">
                 <div id="form-id" class="form-group row">
                     <div class="col ">
                       <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords">
                     </div>
-                    <button type="submit" class="btn btn-success  col-sm-2 col-form-button">Submit</button></div>
+                    <button type="submit" class="btn btn-success  col-sm-2 col-form-button" >Submit</button></div>
             </form> 
           </div>
-          <div class="col sm-6">
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Sıralama Türü Seçiniz</option>
-                <option value="1">Atıf Sayısı: çok => az</option>
-                <option value="2">Yayımlanma Tarihi: önce=>sonra</option>
-              </select>
-          </div>
+          <div class="col sm-6"> 
+            <div class="btn-group"> 
+                <form class="input-area" method="GET" action="/dateSort" style="padding:10px;">
+                    <button type="submit" class="btn btn-dark " >Tarih Sırala önce=>sonra</button>
+                 </form>
+                 <form class="input-area" method="GET" action="/quotationSort" style="padding:10px;">
+                  <button type="submit" class="btn btn-dark " >Alıntı Sırala az=>çok</button>
+                </form>
+            </div>
+         </div>
         </div>
       </div>
         </div>

@@ -1,6 +1,6 @@
 const Publication = require('../models/Publication')
 
-exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,publicationDate) =>{
+exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,citationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,publicationDate) =>{
     for(let i=0; i< titles.length ;i++){
         try {
             const publication = await Publication.create({
@@ -10,6 +10,7 @@ exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords
               publicationDate:publicationDate[i],
               publisherName:publisher[i],
               engineKeywords:engineKeywords[i],
+              references :citationList[i],
               publicationKeywords:cleanedArticleKeywords[i],
               summary:cleanedAbstract[i],
               doiNumber:doi[i],
@@ -21,3 +22,18 @@ exports.createPublication  = async (titles,cleanedAuthors,cleanedArticleKeywords
     }
   
 }
+
+
+exports.sortByDate = async (req,res )=> {
+    const publications = await Publication.find({}).sort('publicationDate'); 
+    res.render('index',{
+     publications
+    })
+   }
+
+   exports.sortByQuotation =async (req,res) => {
+    const publications =await Publication.find({}).sort('quotationCount');
+    res.render('index',{
+        publications
+    })
+   }
