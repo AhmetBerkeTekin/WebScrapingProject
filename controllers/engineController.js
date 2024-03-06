@@ -6,11 +6,11 @@ const fs = require('fs')
 const axios = require('axios');
 const Typo = require("typo-js");
 var dictionary = new Typo('en_US');
-
 const downloadPath =
   'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
-
+ 
 exports.scholarSearch = async (req, res) => {
+  process.setMaxListeners(20)
   console.log(req.body.keyword)
   var keyword = ""
   var isSpelledCorrectly = dictionary.check(req.body.keyword)
@@ -80,8 +80,29 @@ exports.scholarSearch = async (req, res) => {
     // const pdfLinks = findPDFLinks(divs)
     // const authors = findAuthors(divs)
     // const dates =findDate(divs)
-    const url = 'https://dergipark.org.tr/tr/pub/ijmsit/issue/69913/1119738';
-    extractDataFromPage(url);
+    //const url = 'http://aquatres.scientificwebjournals.com/tr/pub/issue/45444/578494';
+    //scrapeDergipark(url);
+    const urlss = [
+      'https://dergipark.org.tr/tr/pub/ijmsit/issue/69913/1119738',
+      'https://dergipark.org.tr/tr/pub/aquatres/issue/45444/578494',
+ 
+
+
+      // Diğer URL'ler buraya eklenebilir...
+    ];
+    var i = 0
+    urlss.forEach(async (url) => {
+      try {
+        if(i<10){
+          await scrapeDergipark(url);
+          i++
+        }
+        
+
+      } catch (error) {
+        console.error('Scraping işlemi başarısız oldu:', error);
+      }
+    });
 
     return { titles, urls}
   }
@@ -178,16 +199,90 @@ async function downloadPDF(url, destination) {
   }
 }
 
-async function extractDataFromPage(url) {
+
+async function scrapeDergipark(url) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto(url);
 
-  // Başlık
-  const title = await page.$eval('h3.article-title', element => element.textContent.trim());
-  console.log('Başlık:', title);
+  // Sayfa içeriğini çekmek için uygun seçicileri kullanarak verileri alın
+  const titles = await page.$$eval('.article-title', titles => titles.map(title => title.textContent.trim()).filter(title => title !== ''));
+  const abstracts = await page.$$eval('.article-abstract p', abstracts => abstracts.map(abstract => abstract.textContent.trim()).filter(abstract => abstract !== ''));
+  const keywords = await page.$$eval('.article-keywords p', keywords => {
+    const keywordLists = keywords.map(keyword => keyword.textContent.trim());
+    let combinedKeywords = '';
+    keywordLists.forEach(keyword => {
+        if (keyword !== '') {
+            keyword = keyword.replace(/\s+/g, ' ');
+            if (combinedKeywords !== '') {
+                combinedKeywords += ', ';
+            }
+            combinedKeywords += keyword;
+        }
+    });
+    return [combinedKeywords];
+});
 
+const author = await page.$$eval('.table.record_properties tbody tr td', tds => {
+  let author = [];
 
+  tds.forEach(td => {
+      const paragraphs = td.querySelectorAll('p');
+      paragraphs.forEach(paragraph => {
+          const anchor = paragraph.querySelector('a');
+          if (anchor) {
+              author.push(anchor.textContent.trim());
+              return; 
+          }
+      });
+  });
 
-  await browser.close();
+  return [author];
+});
+const subtitleText = await page.$eval('.article-subtitle', span => span.textContent.trim().replace(/\s+/g, ' '));
+const lastCommaIndex = subtitleText.lastIndexOf(',');
+const lastIndex = lastCommaIndex !== -1 ? lastCommaIndex : subtitleText.length - 1;
+const lastIndexSubstring = subtitleText.substring(lastIndex + 1).trim();
+
+try {
+  const doiNumber = await page.$eval('.article-doi a', anchor => anchor.href);
+  console.log("Doi:",doiNumber );
+} catch (error) {
+  console.log('DOI yok');
 }
+const citationList = await page.$$eval('.article-citations ul li', lis => {
+  return lis.map(li => li.textContent.trim());
+});
+
+
+// console.log('Başlıklar:', titles);
+// console.log('Özetler:', abstracts);
+// console.log("Keywords:",keywords);
+// console.log("Yazarlar :",author);
+// console.log('Yayımlanma Tarihi' ,lastIndexSubstring);
+// console.log('Kaynakça',citationList);
+
+const data = [];
+
+for (let i = 0; i < titles.length; i++) {
+    const dataObject = createDataObject(titles[i], abstracts[i], keywords[i],author[i], lastIndexSubstring, citationList);
+    data.push(dataObject);
+}
+
+await browser.close();
+}
+
+function createDataObject(title, abstract, keyword, author, publicationDate, citation) {
+  return {
+      title: title,
+      abstract: abstract,
+      keyword: keyword,
+      author: author,
+      publicationDate: publicationDate,
+      citation: citation
+  };
+}
+
+
+
+
