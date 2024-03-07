@@ -8,7 +8,7 @@ const publicationController = require('../controllers/publicationController')
 var dictionary = new Typo('en_US')
 const downloadPath =
   'C:\\Kodlamalar\\JavaScriptCodes\\WebScrapingProject\\public\\PDFFiles\\'
- 
+
 exports.scholarSearch = async (req, res) => {
   process.setMaxListeners(20)
   console.log(req.body.keyword)
@@ -82,76 +82,124 @@ exports.scholarSearch = async (req, res) => {
     for (const url of urls) {
       if (i == 10) break
       const page = await browser.newPage()
-      await page.goto(url)
-      const title = await page.$eval('.active .article-title', (element) => {
-        return element.getAttribute('aria-label')
-      })
-      const authors = await page.$eval('.article-authors', (element) => {
-        return element.textContent.trim()
-      })
-      const subTitle = await page.$eval('.article-subtitle', (element) => {
-        return element.textContent.trim()
-      })
-      const splits = subTitle.split(',')
-      const publicationDate = splits[splits.length - 1].trim()
-      const absract = await page.$eval(
-        '.active .article-abstract > p',
-        (element) => {
-          return element.textContent.trim()
-        }
-      )
-      const engineKeywords = keyword
-      const articleKeywords = await page.$eval(
-        '.article-keywords',
-        (element) => {
-          return element.textContent.trim()
-        }
-      )
-      const citationList = await page.$eval( 
-        '.article-citations', (lis) => { 
-        return lis.textContent.trim()  
-      });
-      
-      const publicationType = await page.$eval(
-        'table.record_properties tr:nth-child(3)',
-        (row) => {
-          const data = row.querySelector('td').textContent.trim()
-          return data
-        }
-      )
-      var doiNumber = ''
       try {
-        doiNumber = await page.$eval('.doi-link', (element) => {
-          return element.getAttribute('href')
-        })
-      } catch (error) {
-        doiNumber = 'yok'
-      }
-      const publisher = 'DergiPark'
-      const pdfLink = await page.$eval(
-        'a.btn.btn-sm.float-left.article-tool.pdf.d-flex.align-items-center',
-        (element) => {
-          return element.getAttribute('href')
+        await page.goto(url)
+        var title,
+          authors,
+          subTitle,
+          publicationDate,
+          abstract,
+          engineKeywords,
+          articleKeywords,
+          citationList,
+          publicationType,
+          pdfLink
+        try {
+          title = await page.$eval('.active .article-title', (element) => {
+            return element.getAttribute('aria-label')
+          })
+        } catch (error) {
+          console.error('Başlık alinamadi:', error)
+          title = 'Gelmeyen veri'
         }
-      )
-      const quotationCount = Math.floor(Math.random() * 1000) + 1;
-
-      results.push({
-        title,
-        authors,
-        absract,
-        engineKeywords,
-        articleKeywords,
-        citationList,
-        doiNumber,
-        publisher,
-        pdfLink,
-        publicationType,
-        publicationDate,
-        quotationCount
-      })
-      await page.close()
-      i++
+        try {
+          authors = await page.$eval('.article-authors', (element) => {
+            return element.textContent.trim()
+          })
+        } catch (error) {
+          console.error('Yazarlar alinamadi:', error)
+          authors = 'Gelmeyen veri'
+        }
+        try {
+          subTitle = await page.$eval('.article-subtitle', (element) => {
+            return element.textContent.trim()
+          })
+          const splits = subTitle.split(',')
+          publicationDate = splits[splits.length - 1].trim()
+        } catch (error) {
+          console.error('Tarih alinamadi:', error)
+          publicationDate = ''
+        }
+        try {
+          abstract = await page.$eval(
+            '.active .article-abstract > p',
+            (element) => {
+              return element.textContent.trim()
+            }
+          )
+        } catch (error) {
+          console.error('Ozet alinamadi:', error)
+          abstract = 'Gelmeyen veri'
+        }
+        engineKeywords = keyword
+        try {
+          articleKeywords = await page.$eval('.article-keywords', (element) => {
+            return element.textContent.trim()
+          })
+        } catch (error) {
+          console.error('Makale anahtar kelimeleri alinamadi', error)
+          articleKeywords = 'Gelmeyen veri'
+        }
+        try {
+          citationList = await page.$eval('.article-citations', (lis) => {
+            return lis.textContent.trim()
+          })
+        } catch (error) {
+          console.error('Referanslar alinamadi', error)
+          citationList = 'Gelmeyen veri'
+        }
+        try {
+          publicationType = await page.$eval(
+            'table.record_properties tr:nth-child(3)',
+            (row) => {
+              const data = row.querySelector('td').textContent.trim()
+              return data
+            }
+          )
+        } catch (error) {
+          console.error('Makale turu alinamadi', error)
+          publicationType = 'Gelmeyen veri'
+        }
+        var doiNumber = ''
+        try {
+          doiNumber = await page.$eval('.doi-link', (element) => {
+            return element.getAttribute('href')
+          })
+        } catch (error) {
+          doiNumber = 'yok'
+        }
+        const publisher = 'DergiPark'
+        try {
+          pdfLink = await page.$eval(
+            'a.btn.btn-sm.float-left.article-tool.pdf.d-flex.align-items-center',
+            (element) => {
+              return element.getAttribute('href')
+            }
+          )
+        } catch (error) {
+          console.error('PDF linki alinamadi', error)
+          pdfLink = 'Gelmeyen veri'
+        }
+        const quotationCount = Math.floor(Math.random() * 1000) + 1
+        results.push({
+          title,
+          authors,
+          abstract,
+          engineKeywords,
+          articleKeywords,
+          citationList,
+          doiNumber,
+          publisher,
+          pdfLink,
+          publicationType,
+          publicationDate,
+          quotationCount,
+        })
+        await page.close()
+        i++
+      } catch (error) {
+        console.log(error)
+      }
     }
     await browser.close()
     return results
@@ -161,13 +209,13 @@ exports.scholarSearch = async (req, res) => {
   const authors = data.map((item) => item.authors)
   const articleKeywords = data.map((item) => item.articleKeywords)
   const engineKeywords = data.map((item) => item.engineKeywords)
-  const citationList =data.map((item) =>item.citationList) 
+  const citationList = data.map((item) => item.citationList)
   const cleanedCitationList = citationList.map((citation) => {
-    return citation.replace(/\s+/g, ' ').trim() 
+    return citation.replace(/\s+/g, ' ').trim()
   })
   const publisher = data.map((item) => item.publisher)
-  const quotationCount =data .map((item) =>item.quotationCount)
-  const abstract = data.map((item) => item.absract)
+  const quotationCount = data.map((item) => item.quotationCount)
+  const abstract = data.map((item) => item.abstract)
   const cleanedAbstract = abstract.map((abstract) => {
     return abstract.replace(/\s+/g, ' ').trim()
   })
@@ -179,21 +227,50 @@ exports.scholarSearch = async (req, res) => {
   const cleanedAuthors = authors.map((author) => {
     return author.replace(/\s+/g, ' ').trim()
   })
-  
+
   const doi = data.map((item) => item.doiNumber)
   const publicationType = data.map((item) => item.publicationType)
   const publicationDate = data.map((item) => item.publicationDate)
-  let dateTarihler = [];
+  let dateTarihler = []
 
   publicationDate.forEach((stringTarih) => {
-    const parts = stringTarih.split("."); // Stringi parçalayarak diziye dönüştürüyoruz
-    const formattedDateString = parts[2] + "-" + parts[1] + "-" + parts[0]; // Yıl, ay ve günü sırasıyla alarak ISO formatına dönüştürüyoruz
-    const dateObject = new Date(formattedDateString);
-    dateTarihler.push(dateObject);
-});
+    const parts = stringTarih.split('.') // Stringi parçalayarak diziye dönüştürüyoruz
+    const formattedDateString = parts[2] + '-' + parts[1] + '-' + parts[0] // Yıl, ay ve günü sırasıyla alarak ISO formatına dönüştürüyoruz
+    const dateObject = new Date(formattedDateString)
+    dateTarihler.push(dateObject)
+  })
 
-
-   await publicationController.createPublication(titles,cleanedAuthors,cleanedArticleKeywords,engineKeywords,cleanedCitationList,publisher,prefixedPdfs,doi,cleanedAbstract,urls,publicationType,dateTarihler,quotationCount)
+  await publicationController.createPublication(
+    titles,
+    cleanedAuthors,
+    cleanedArticleKeywords,
+    engineKeywords,
+    cleanedCitationList,
+    publisher,
+    prefixedPdfs,
+    doi,
+    cleanedAbstract,
+    urls,
+    publicationType,
+    dateTarihler,
+    quotationCount
+  )
+  const promises = prefixedPdfs.map(async (url, i) => {
+    return await downloadPDF(url, `${downloadPath}example${i}.pdf`)
+      .then(() => ({ status: 'fulfilled' }))
+      .catch((error) => ({ status: 'rejected', reason: error }))
+  })
+  Promise.allSettled(promises).then((results) => {
+    results.forEach((result, i) => {
+      if (result.status === 'fulfilled') {
+        console.log(`example${i}.pdf downloaded successfully.`)
+      } else {
+        console.error(
+          `example${i}.pdf could not download. Error: ${result.reason}`
+        )
+      }
+    })
+  })
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
@@ -225,6 +302,3 @@ async function downloadPDF(url, destination) {
     throw new Error('Error while downloading: ' + error.message)
   }
 }
- 
-
-
