@@ -45,13 +45,13 @@
             <div class="title">
                 <h3 class="title"><%= publication.name %></h3>
                 <h5>
-                    <a href="<%= publication.pdfLink %>">
+                    <a href="<%= publication.pdfLink %>" target="_blank">
                         <i class="fa-regular fa-file-pdf" style="font-size: 20px;"></i>
-                    </a>
-                </h5>
+                    </a>  
+                </h5>   
                 <h4>Yayın Türü : <%= publication. publicationType %></h4>
             </div>
-            <a href="<%= publication.doiNumber %>">DOI: <%= publication.doiNumber %></a>
+            <a href="<%= publication.doiNumber %>" target="_blank">DOI: <%= publication.doiNumber %></a> 
             <div class="article_author">
               <h4>Yazarlar</h4>
                 <p class="article_authors" style="color: blue; margin-bottom: 20px; margin-top: 20px;"><%= publication.authors %></p>
