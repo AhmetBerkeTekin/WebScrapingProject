@@ -118,7 +118,8 @@
         <div class="gs_res">
             <% for(let i = 0; i < publications.length; i++){ %>
         <div class="gs_r" style="border-style: ridge;margin: 20px; width: 50%; margin-left: 400px;">
-            <a href="#"><h3><%= publications[i].name%></h3></a>
+            <a href=<%=publications[i]._id %>>
+                <h3><%= publications[i].name%></h3></a>
             <div><%= publications[i].authors%></div>
             <div>Alıntı : <%= publications[i].quotationCount%> Yayımlanma Tarihi : <%= publications[i].publicationDate.getDate() + "." + publications[i].publicationDate.getMonth() + "." + publications[i].publicationDate.getFullYear()%></div>
         </div>

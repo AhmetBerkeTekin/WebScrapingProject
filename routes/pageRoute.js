@@ -9,7 +9,7 @@ router.route('/').get(pageController.getIndexPage)
 router.route('/dateSort').get(publicationController.sortByDate)
 router.route('/quotationSort').get(publicationController.sortByQuotation)
 router.route('/search').post(engineController.scholarSearch)
-
+router.route('/:id').get(publicationController.getPublication)
 
 
 module.exports = router
