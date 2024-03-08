@@ -255,22 +255,7 @@ exports.scholarSearch = async (req, res) => {
     dateTarihler,
     quotationCount
   )
-  const promises = prefixedPdfs.map(async (url, i) => {
-    return await downloadPDF(url, `${downloadPath}example${i}.pdf`)
-      .then(() => ({ status: 'fulfilled' }))
-      .catch((error) => ({ status: 'rejected', reason: error }))
-  })
-  Promise.allSettled(promises).then((results) => {
-    results.forEach((result, i) => {
-      if (result.status === 'fulfilled') {
-        console.log(`example${i}.pdf downloaded successfully.`)
-      } else {
-        console.error(
-          `example${i}.pdf could not download. Error: ${result.reason}`
-        )
-      }
-    })
-  })
+  downloadFiles(prefixedPdfs, 10);
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
@@ -283,22 +268,21 @@ function findUrls(divs) {
   })
   return urls
 }
-async function downloadPDF(url, destination) {
-  try {
-    const response = await axios({
-      method: 'GET',
-      url: url,
-      responseType: 'stream',
-    })
+async function downloadFiles(url, count) {
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  })
+  const page = await browser.newPage()
+  for (let i = 0; i < count; i++) {
+    const pageUrl = await url[i]
+    try {
+      await page.goto(pageUrl)
+      await page.waitForTimeout(4000)
 
-    const writer = fs.createWriteStream(destination)
-    response.data.pipe(writer)
-
-    return new Promise((resolve, reject) => {
-      writer.on('finish', resolve)
-      writer.on('error', reject)
-    })
-  } catch (error) {
-    throw new Error('Error while downloading: ' + error.message)
+    } catch (e) {
+      console.log(`Error loading ${pageUrl}`)
+    }
   }
+  await browser.close()
 }
