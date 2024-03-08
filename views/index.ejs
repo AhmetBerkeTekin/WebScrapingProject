@@ -7,38 +7,71 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.css">
     <link rel="stylesheet" href="../public/style.css" type="text/css">
+    <style>
+            .container {
+        position: relative;
+        margin-bottom:30px;
+        margin-top: 20px;
+        }
+
+            .form1 {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 50%;
+        }
+
+        .form2 {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+
+        .form3 {
+            position: absolute;
+            right: 0;
+            top: 100px;
+        }
+        a{
+            text-decoration: none;
+            text-decoration-color: darkgreen;
+           
+        }
+        a:hover{
+            color:black;
+        }
+
+    </style>
 </head>
 <body>
     <script async src="https://cse.google.com/cse.jsjs?cx=b2809a9ebea4a4ffc">
     </script>
     <!-- Searc Toold -->
-   <div class="search-tools" >
-    <div class="container text-center">
-        <div class="row">
-          <div class="col sm-6" >
-            <form class="input-area" method="POST" action="/search">
-                <div id="form-id" class="form-group row">
-                    <div class="col ">
-                      <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords">
-                    </div>
-                    <button type="submit" class="btn btn-success  col-sm-2 col-form-button" >Submit</button></div>
-            </form> 
-          </div>
-          <div class="col sm-6"> 
-            <div class="btn-group"> 
-                <form class="input-area" method="GET" action="/dateSort" style="padding:10px;">
-                    <button type="submit" class="btn btn-dark " >Tarih Sırala önce=>sonra</button>
-                 </form>
-                 <form class="input-area" method="GET" action="/quotationSort" style="padding:10px;">
-                  <button type="submit" class="btn btn-dark " >Alıntı Sırala az=>çok</button>
+    <div class="search-tools" >
+        <div class="container text-center">
+            <div class="row">
+            <div class="container" >
+                <form class="form1" method="POST" action="/search"  id="form1">
+                    <div id="form-id" class="form-group row">
+                        <div class="col ">
+                        <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords" style="width: 300px;">
+                        </div>
+                        <button type="submit" class="btn btn-dark  col-sm-2 col-form-button" style="width: 130px;" >Submit</button></div>
                 </form>
+                    <form class="form2" method="GET" action="/dateSort" id="form2">
+                        <button type="submit" class="btn btn-dark " >Tarih Sırala önce=>sonra</button>
+                    </form>
+                    <form class="form3" method="GET" action="/quotationSort" id="form3">
+                    <button type="submit" class="btn btn-dark " >Alıntı Sırala az=>çok</button>
+                    </form>
+
             </div>
-         </div>
+            
+            </div>
         </div>
-      </div>
-        </div>
+            </div>
    <!-- Table Struct -->
-   <div style="margin-top:50px ;">
+   <!-- <div style="margin-top:50px ;">
         <table id="example" class="table table-hover table-bordered">
             <thead>
                 <tr>
@@ -79,8 +112,18 @@
                 <% } %>
             </tbody>
         </table>
-    </div>
+    </div> -->
 
+
+        <div class="gs_res">
+            <% for(let i = 0; i < publications.length; i++){ %>
+        <div class="gs_r" style="border-style: ridge;margin: 20px; width: 50%; margin-left: 400px;">
+            <a href="#"><h3><%= publications[i].name%></h3></a>
+            <div><%= publications[i].authors%></div>
+            <div>Alıntı : <%= publications[i].quotationCount%> Yayımlanma Tarihi : <%= publications[i].publicationDate.getDate() + "." + publications[i].publicationDate.getMonth() + "." + publications[i].publicationDate.getFullYear()%></div>
+        </div>
+        <% } %>
+        </div>
     
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

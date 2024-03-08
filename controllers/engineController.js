@@ -83,8 +83,8 @@ exports.scholarSearch = async (req, res) => {
       if (i == 10) break
       const page = await browser.newPage()
       await page.goto(url)
-      const title = await page.$eval('.active .article-title', (element) => {
-        return element.getAttribute('aria-label')
+      const title = await page.$eval('.active .article-title ', (element) => {
+        return element.textContent.trim()
       })
       const authors = await page.$eval('.article-authors', (element) => {
         return element.textContent.trim()
