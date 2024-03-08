@@ -96,7 +96,7 @@ exports.scholarSearch = async (req, res) => {
           pdfLink
         try {
           title = await page.$eval('.active .article-title', (element) => {
-            return element.getAttribute('aria-label')
+            return element.textContent.trim()
           })
         } catch (error) {
           console.error('Başlık alinamadi:', error)
@@ -133,7 +133,7 @@ exports.scholarSearch = async (req, res) => {
         }
         engineKeywords = keyword
         try {
-          articleKeywords = await page.$eval('.article-keywords', (element) => {
+          articleKeywords = await page.$eval('.article-keywords >p', (element) => {
             return element.textContent.trim()
           })
         } catch (error) {
@@ -150,11 +150,9 @@ exports.scholarSearch = async (req, res) => {
         }
         try {
           publicationType = await page.$eval(
-            'table.record_properties tr:nth-child(3)',
-            (row) => {
-              const data = row.querySelector('td').textContent.trim()
-              return data
-            }
+           'span.kt-font-bold',(element) => {
+            return element.textContent.trim()
+           }
           )
         } catch (error) {
           console.error('Makale turu alinamadi', error)
@@ -253,16 +251,16 @@ exports.scholarSearch = async (req, res) => {
     urls,
     publicationType,
     dateTarihler,
-    quotationCount
+    quotationCount  
   )
-  downloadFiles(prefixedPdfs, 10);
+ // downloadFiles(prefixedPdfs, 10); 
   res.redirect('/')
 }
 // Fonksiyon 2: URL Adresi Bulma
 function findUrls(divs) {
   const urls = []
   divs.forEach(({ href }) => {
-    if (href) {
+    if (href) {  
       urls.push(href)
     }
   })

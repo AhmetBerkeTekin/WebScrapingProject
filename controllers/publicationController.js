@@ -30,6 +30,7 @@ exports.createPublication = async (
         doiNumber: doi[i],
         urlAdress: urls[i],
         quotationCount: quotationCount[i],
+        pdfLink :prefixedPdfs[i]
       })
     } catch (error) {
       console.log(error)

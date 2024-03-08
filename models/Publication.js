@@ -46,6 +46,7 @@ const PublicationSchema = new Schema({
     required: false,
   },
   urlAdress: String,
+  pdfLink :String,
 })
 
 const Publication = mongoose.model('Publication', PublicationSchema)

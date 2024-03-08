@@ -4,26 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+        <style>
+            .container {
+                width: 50%; /* Sayfanın yarısını kaplayacak şekilde genişlik ataması yapabilirsiniz */
+                margin: 0 auto;
+            }
+            h3{
+                font-size: 30px;
+            }
+            .article_summary{
+                color: brown;
+                font-size: 25px;
+            }
+            .article_keywords{
+                color: brown;
+                font-size: 25px;
+            }
+            .article_author{
+                color: brown;
+                font-size: 25px;
+            }
+            p{
+               color: black; 
+               font-size: 20px;
+            }
+            .article_citations{
+                color: brown;
+                font-size: 25px;
+            }
+            a{
+                text-decoration: none;
+            }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     
- <div class="container">
-    <div class="article_panel">
-        <h3 class="title"></h3>
-        <p class="article_authors"></p>
-        <div class="article_summary">Özet
-            <p><%=publication.summary %></p>
+    <div class="container">
+        <div class="article_panel">
+            <div class="title">
+                <h3 class="title"><%= publication.name %></h3>
+                <h5>
+                    <a href="<%= publication.pdfLink %>">
+                        <i class="fa-regular fa-file-pdf" style="font-size: 20px;"></i>
+                    </a>
+                </h5>
+                <h4>Yayın Türü : <%= publication. publicationType %></h4>
+            </div>
+            <a href="<%= publication.doiNumber %>">DOI: <%= publication.doiNumber %></a>
+            <div class="article_author">
+              <h4>Yazarlar</h4>
+                <p class="article_authors" style="color: blue; margin-bottom: 20px; margin-top: 20px;"><%= publication.authors %></p>
+            </div>
+            <div class="article_summary">
+                <h4>Özet</h4>
+                <p><%= publication.summary %></p>
+            </div>
+            <div class="article_keywords">
+                <h4>Anahtar Kelimeler</h4>
+                <p style="color: blue; margin-bottom: 30px; margin-top: 30px;"><%= publication.publicationKeywords %></p>
+            </div>
+            <div class="article_citations">
+                <h4>Referanslar</h4>
+                <p style="font-size: 15px;"><%= publication.references %></p>
+            </div>
         </div>
-        <div class="article_keywords">
-            <p><%=publication.publicationKeywords %></p>
-        </div>
-        <div class="article_citations">
-            <p>lsmaflm</p>
-        </div>
-
-        
     </div>
- </div>
+    
 
 
 
