@@ -8,29 +8,25 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.bootstrap5.css">
     <link rel="stylesheet" href="../public/style.css" type="text/css">
     <style>
-            .container {
-        position: relative;
-        margin-bottom:30px;
-        margin-top: 20px;
+
+
+        .container {
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
         }
 
-            .form1 {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            top: 50%;
+        .form-container {
+            display: flex;
+            margin-top: 20px; 
         }
 
-        .form2 {
-            position: absolute;
-            right: 0;
-            top: 0;
+        .form-container form {
+            margin-right: 10px; 
         }
 
-        .form3 {
-            position: absolute;
-            right: 0;
-            top: 100px;
+        .form4 {
+            margin-top: 20px; 
         }
         a{
             text-decoration: none;
@@ -47,28 +43,39 @@
     <script async src="https://cse.google.com/cse.jsjs?cx=b2809a9ebea4a4ffc">
     </script>
     <!-- Searc Toold -->
-        <div class="search-tools" >
-            <div class="container text-center">
-                <div class="row">
-                     <div class="container" >
-                        <form class="form1" method="POST" action="/search"  id="form1">
+    <div class="search-tools">
+        <div class="container text-center">
+            <div class="row">
+                <div class="container">
+                    <form class="form1" method="POST" action="/search" id="form1">
                         <div id="form-id" class="form-group row">
-                            <div class="col ">
-                            <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords" style="width: 300px;">
+                            <div class="col">
+                                <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Keywords" style="width: 300px;">
                             </div>
-                            <button type="submit" class="btn btn-dark  col-sm-2 col-form-button" style="width: 130px;" >Submit</button></div>
-                        </form>
+                            <button type="submit" class="btn btn-dark col-sm-2 col-form-button" style="width: 130px;">Submit</button>
+                        </div>
+                    </form>
+                    <form class="form4" method="POST" action="" id="form4">
+                        <div id="form-id" class="form-group row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="inputText" name="keyword" placeholder="Filter" style="width: 300px;">
+                            </div>
+                            <button type="submit" class="btn btn-dark col-sm-2 col-form-button" style="width: 130px;">Filter</button>
+                        </div>
+                    </form>
+                    <div class="form-container">
                         <form class="form2" method="GET" action="/dateSort" id="form2">
-                            <button type="submit" class="btn btn-dark " >Tarih Sırala önce=>sonra</button>
+                            <button type="submit" class="btn btn-dark">Date Sort before=>after</button>
                         </form>
                         <form class="form3" method="GET" action="/quotationSort" id="form3">
-                        <button type="submit" class="btn btn-dark " >Alıntı Sırala az=>çok</button>
+                            <button type="submit" class="btn btn-dark">Quote Sort less => more</button>
                         </form>
-
                     </div>
                 </div>
             </div>
-         </div>
+        </div>
+    </div>
+    
 
 
 
