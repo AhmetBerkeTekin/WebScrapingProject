@@ -85,19 +85,19 @@
               <div class="mb-3 row">
                 <label for="title" class="col-sm-2 col-form-label">Title</label>
                 <div class="col-sm-10">
-                  <input type="text"  class="form-control" id="title">
+                  <input type="text" name= "name" class="form-control" id="title">
                 </div>
               </div>
               <div class="mb-3 row">
                 <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
                 <div class="col-sm-10">
-                  <input type="text" class="form-control" id="author">
+                  <input type="text" name= "author" class="form-control" id="author">
                 </div>
               </div>
               <div class="mb-3 row">
                 <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="keywords">
+                    <input type="text" name= "keyword" class="form-control" id="keywords">
                   </div>
               </div>
               <div class="mb-3 row">
@@ -107,18 +107,14 @@
                         <input type="checkbox" id="dropdown-toggle" class="dropdown-toggle">
                         <label for="dropdown-toggle" class="dropdown-label">Select</label>
                         <ul class="dropdown-menu">
-                        <li><input type="checkbox" id="option1" name="option1" value="name" checked>
-                        <label for="option1">Title</label></li>
-                        <li><input type="checkbox" id="option1" name="option1" value="authors" checked>
-                        <label for="option1">Authors</label></li>
-                        <li><input type="checkbox" id="option2" name="option1" value="publicationType" >
-                        <label for="option2">Publication Type</label></li>
-                        <li><input type="checkbox" id="option3" name="option1" value="engineKeywords">
-                        <label for="option3">Engine Keywords</label></li>
-                        <li><input type="checkbox" id="option2" name="option1" value="publicationKeywords" >
-                        <label for="option2">Publication Keywords</label></li>
-                        <li><input type="checkbox" id="option3" name="option1" value="summary">
-                        <label for="option3">Summary</label></li>
+                            <li><input type="checkbox" id="option3" name="option1" value="0,250">
+                            <label for="option3">0-250</label></li>
+                            <li><input type="checkbox" id="option2" name="option1" value="250,500" >
+                            <label for="option2">250-500</label></li>
+                            <li><input type="checkbox" id="option3" name="option1" value="500,750">
+                            <label for="option3">500-750</label></li>
+                            <li><input type="checkbox" id="option2" name="option1" value="750,1000" >
+                            <label for="option2">750-1000</label></li>
                         </ul>
                     </div>
                   </div>

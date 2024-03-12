@@ -60,15 +60,38 @@ exports.getPublication = async (req,res) =>{
 }
 
 exports.filterPublication = async (req, res) =>{
-  const array = req.query.keyword.split(',')
-  if(req.query.option1.length == 2){
-    const query = {
-      $or: [
-        { title: { $regex: `${array[0]}`, $options: 'i' } }, // Başlıkta "uzay" kelimesini içeren belgeler
-        { authors: { $regex: `${array[1]}`, $options: 'i' } } // Authors alanında "Ahmet" geçen belgeler
-      ]
-    };
-    const results = await Publication.find(query).exec()
-    console.log(results)
+  const filterKeyword = req.query.keyword
+  const filterName = req.query.name
+  const filterAuthor = req.query.author
+  const range = req.query.option1
+  var [minString,maxString] = range.split(',')
+  var min = parseInt(minString)
+  var max = parseInt(maxString)
+
+  let filter = {}
+  if (filterName) {
+    filter.name = { $regex: '.*' + filterName + '.*', $options: 'i' };
   }
+  if (filterAuthor) {
+    filter.authors = { $regex: '.*' + filterAuthor + '.*', $options: 'i' };
+  }
+  if (filterKeyword) {
+    filter.publicationKeywords = { $regex: '.*' + filterKeyword + '.*', $options: 'i' };
+  }
+  if (min && max) {
+    filter.quotationCount = { $gte: min, $lte: max };
+  }
+  if (!filterName && !filterKeyword && !filterAuthor) {
+    filter = {
+      name: { $regex: '.*' + '' + '.*', $options: 'i' },
+      authors: { $regex: '.*' + '' + '.*', $options: 'i' },
+      publicationKeywords: { $regex: '.*' + '' + '.*', $options: 'i' }
+    };
+  }
+  
+  const publications = await Publication.find({ $or: [filter] }).sort('quotationCount');
+  //console.log(publications)
+  res.status(200).render('index',{
+    publications
+  })
 }
