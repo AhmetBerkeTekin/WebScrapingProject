@@ -58,3 +58,17 @@ exports.getPublication = async (req,res) =>{
     publication
   })
 }
+
+exports.filterPublication = async (req, res) =>{
+  const array = req.query.keyword.split(',')
+  if(req.query.option1.length == 2){
+    const query = {
+      $or: [
+        { title: { $regex: `${array[0]}`, $options: 'i' } }, // Başlıkta "uzay" kelimesini içeren belgeler
+        { authors: { $regex: `${array[1]}`, $options: 'i' } } // Authors alanında "Ahmet" geçen belgeler
+      ]
+    };
+    const results = await Publication.find(query).exec()
+    console.log(results)
+  }
+}

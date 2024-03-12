@@ -8,6 +8,7 @@ const router = express.Router()
 router.route('/').get(pageController.getIndexPage)
 router.route('/dateSort').get(publicationController.sortByDate)
 router.route('/quotationSort').get(publicationController.sortByQuotation)
+router.route('/filter').get(publicationController.filterPublication)
 router.route('/search').post(engineController.scholarSearch)
 router.route('/:id').get(publicationController.getPublication)
 
