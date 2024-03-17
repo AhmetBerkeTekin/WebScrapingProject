@@ -15,27 +15,7 @@ exports.scholarSearch = async (req, res) => {
   var keyword = ''
   var isSpelledCorrectly = dictionary.check(req.body.keyword)
   if (!isSpelledCorrectly) {
-    var array = dictionary.suggest(req.body.keyword)
-    if (array.length != 0) {
-      var originalWord = req.body.keyword
-      var closestMatch
-      var maxSimilarity = -1
-      array.forEach(function (suggestedWord) {
-        var similarity = 0
-        for (var i = 0; i < originalWord.length; i++) {
-          if (originalWord[i] === suggestedWord[i]) {
-            similarity++
-          }
-        }
-        if (similarity > maxSimilarity) {
-          maxSimilarity = similarity
-          closestMatch = suggestedWord
-        }
-      })
-      keyword = closestMatch
-    } else {
-      keyword = req.body.keyword
-    }
+    keyword = await suggestCorrections(req.body.keyword)
   } else {
     keyword = req.body.keyword
   }
@@ -283,4 +263,24 @@ async function downloadFiles(url, count) {
     }
   }
   await browser.close()
+}
+async function suggestCorrections(inputWords) {
+  try {
+      const words = inputWords.split(' ');
+      const correctedWords = [];
+      for (const word of words) {
+          const response = await axios.get(`https://api.datamuse.com/words?sp=${word}`);
+          if (response.data.length > 0) {
+              correctedWords.push(response.data[0].word);
+          } else {
+              correctedWords.push(word); 
+          }
+      }
+      const suggestedCorrection = correctedWords.join(' ');
+
+      return suggestedCorrection;
+  } catch (error) {
+      console.error('API\'den veri alırken bir hata oluştu:', error);
+      return inputWords;
+  }
 }

@@ -64,9 +64,21 @@ exports.filterPublication = async (req, res) =>{
   const filterName = req.query.name
   const filterAuthor = req.query.author
   const range = req.query.option1
-  var [minString,maxString] = range.split(',')
-  var min = parseInt(minString)
-  var max = parseInt(maxString)
+  var minString
+  var maxString
+  var splitted
+  var min,max
+  if(range != undefined){
+    splitted = range.split(',')
+    minString = splitted[0]
+    maxString = splitted[1]
+    min = parseInt(minString)
+    max = parseInt(maxString)
+  }
+  else{
+    min = 0
+    max = 1000
+  }
 
   let filter = {}
   if (filterName) {
