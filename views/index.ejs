@@ -25,9 +25,7 @@
             margin-right: 10px; 
         }
 
-        .form4 {
-            margin-top: 20px; 
-        }
+     
         a{
             text-decoration: none;
             text-decoration-color: darkgreen;
@@ -64,6 +62,35 @@
         display: block;
         }
 
+        .col-4 {
+            flex: 1; /* 1/8'lik genişlik */
+        }
+
+        .col-8 {
+            flex: 7; /* 7/8'lik genişlik */
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .form4 {
+            width: 100%; /* Formun tamamını kapla */
+        }
+        
+        ::-webkit-scrollbar {
+        width: 10px;
+        }
+        /* Dikey scroll çubuğunun stili */
+        ::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 5px;
+        }
+        /* Dikey scroll çubuğunun üzerine gelindiğindeki stili */
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
 
     </style>
 </head>
@@ -80,49 +107,52 @@
 <!-- Genel -->
     <div class="container text-center">
         <div class="row">
-        <div class="col-4">
-            <form class="form4" method="GET" action="/filter" id="form4">
-              <div class="mb-3 row">
-                <label for="title" class="col-sm-2 col-form-label">Title</label>
-                <div class="col-sm-10">
-                  <input type="text" name= "name" class="form-control" id="title">
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label for="inputAuthor" class="col-sm-2 col-form-label">Author</label>
-                <div class="col-sm-10">
-                  <input type="text" name= "author" class="form-control" id="author">
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label for="inputKeywords" class="col-sm-2 col-form-label">Keywords</label>
-                <div class="col-sm-10">
-                    <input type="text" name= "keyword" class="form-control" id="keywords">
-                  </div>
-              </div>
-              <div class="mb-3 row">
-                <label for="inputCitations" class="col-sm-2 col-form-label">Citations</label>
-                <div class="col-sm-10">
-                    <div class="dropdown">
-                        <input type="checkbox" id="dropdown-toggle" class="dropdown-toggle">
-                        <label for="dropdown-toggle" class="dropdown-label">Select</label>
-                        <ul class="dropdown-menu">
-                            <li><input type="checkbox" id="option3" name="option1" value="0,250">
-                            <label for="option3">0-250</label></li>
-                            <li><input type="checkbox" id="option2" name="option1" value="250,500" >
-                            <label for="option2">250-500</label></li>
-                            <li><input type="checkbox" id="option3" name="option1" value="500,750">
-                            <label for="option3">500-750</label></li>
-                            <li><input type="checkbox" id="option2" name="option1" value="750,1000" >
-                            <label for="option2">750-1000</label></li>
-                        </ul>
+            <div class="col-4" style="flex: 1;">
+                <label for="filter" style="margin-bottom: 10px;">FİLTRELEME</label>
+                <form class="form4" method="GET" action="/filter" id="form4">
+                    <div class="mb-3 row">
+                        <label for="title" class="col-sm-2 col-form-label" style="margin-bottom: 10px;">Title</label>
+                        <div class="col-sm-10">
+                           <input type="text" name="name" class="form-control" id="title" >
+                        </div>
                     </div>
-                  </div>
-              </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
-             </form> 
-        </div>
-        <div class="col-8">
+                    <div class="mb-3 row">
+                        <label for="inputAuthor" class="col-sm-3 col-form-label"  style="margin-bottom: 10px;">Author</label>
+                        <div class="col-sm-9">
+                            <input type="text" name= "author" class="form-control" id="author">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="inputKeywords" class="col-sm-4 col-form-label" style="margin-bottom: 10px;">Keywords</label>
+                        <div class="col-sm-8" >
+                            <input type="text" name= "keyword" class="form-control" id="keywords">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="inputCitations" class="col-sm-4 col-form-label" >Citations</label>
+                        <div class="col-sm-8">
+                            <div class="dropdown">
+                                <input type="checkbox" id="dropdown-toggle" class="dropdown-toggle">
+                                <label for="dropdown-toggle" class="dropdown-label" style="width: 100px;">Select</label>
+                                <ul class="dropdown-menu">
+                                    <li><input type="checkbox" id="option3" name="option1" value="0,250">
+                                    <label for="option3">0-250</label></li>
+                                    <li><input type="checkbox" id="option2" name="option1" value="250,500" >
+                                    <label for="option2">250-500</label></li>
+                                    <li><input type="checkbox" id="option3" name="option1" value="500,750">
+                                    <label for="option3">500-750</label></li>
+                                    <li><input type="checkbox" id="option2" name="option1" value="750,1000" >
+                                    <label for="option2">750-1000</label></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark" style="width: 200px;">Submit</button>
+                </form> 
+            </div>
+            
+
+        <div class="col-8" style="flex:15;">
             <div class="search-tools">
                 <div class="container text-center">
                     <div class="row">
@@ -148,7 +178,7 @@
                     </div>
                 </div>
             </div>
-            <div class="gs_res" style="width: 50%px;">
+            <div class="gs_res" style="width:50%px;">
                 <% for(let i = 0; i < publications.length; i++){ %>
                 <div class="gs_r" style="border-style: ridge;margin: 20px; width: 50%; margin-left: 300px;">
                     <h3>
